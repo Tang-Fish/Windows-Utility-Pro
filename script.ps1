@@ -1,9 +1,6 @@
 Add-Type -AssemblyName PresentationFramework, PresentationCore, System.Windows.Forms, Microsoft.VisualBasic
 
-# ==========================================
-# 1. FULLSCREEN DISPLAY LIGHT ENGINE
-# ==========================================
-$PresetColors = @('#FFFFFF', '#FFE4B5', '#D4F1F9', '#808080', '#FF0000', '#00FF00', '#0000FF', '#000000')
+$PresetColors = @('
 
 $StartFullScreen = {
     param($StartColor, $AllMonitors)
@@ -71,9 +68,6 @@ $StartFullScreen = {
     [void]$Windows[-1].ShowDialog()
 }
 
-# ==========================================
-# 2. MODERN PROGRESS POPUP & WINGET RUNNER
-# ==========================================
 $RunWingetTasks = {
     param([array]$Tasks, [scriptblock]$OnComplete = $null)
 
@@ -89,7 +83,7 @@ $RunWingetTasks = {
                 <Setter.Value>
                     <ControlTemplate TargetType="ProgressBar">
                         <Grid Height="12">
-                            <Border Name="PART_Track" Background="#27272A" CornerRadius="6"/>
+                            <Border Name="PART_Track" Background="
                             <Border Name="PART_Indicator" HorizontalAlignment="Left" Background="{TemplateBinding Foreground}" CornerRadius="6"/>
                         </Grid>
                     </ControlTemplate>
@@ -97,7 +91,7 @@ $RunWingetTasks = {
             </Setter>
         </Style>
     </Window.Resources>
-    <Border Background="#18181B" BorderBrush="#3F3F46" BorderThickness="1" CornerRadius="10" Padding="20">
+    <Border Background="
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -109,30 +103,30 @@ $RunWingetTasks = {
 
             <!-- Top Header -->
             <DockPanel Grid.Row="0" Margin="0,0,0,12">
-                <TextBlock Text="WINUTIL PRO" FontSize="11" FontWeight="Bold" Foreground="#00A2ED" VerticalAlignment="Center"/>
-                <Border DockPanel.Dock="Right" Background="#27272A" CornerRadius="4" Padding="8,2">
-                    <TextBlock Name="TxtStep" Text="Step 1 of 1" FontSize="11" Foreground="#A1A1AA"/>
+                <TextBlock Text="WINUTIL PRO" FontSize="11" FontWeight="Bold" Foreground="
+                <Border DockPanel.Dock="Right" Background="
+                    <TextBlock Name="TxtStep" Text="Step 1 of 1" FontSize="11" Foreground="
                 </Border>
             </DockPanel>
 
             <!-- Task Title & Big Percentage -->
             <DockPanel Grid.Row="1" Margin="0,0,0,8">
-                <TextBlock Name="TxtPercent" DockPanel.Dock="Right" Text="0%" FontSize="22" FontWeight="Bold" Foreground="#00A2ED" VerticalAlignment="Bottom"/>
-                <TextBlock Name="TxtTitle" Text="Preparing Winget..." FontSize="15" FontWeight="SemiBold" Foreground="#F4F4F5" TextTrimming="CharacterEllipsis" VerticalAlignment="Bottom" Margin="0,0,12,2"/>
+                <TextBlock Name="TxtPercent" DockPanel.Dock="Right" Text="0%" FontSize="22" FontWeight="Bold" Foreground="
+                <TextBlock Name="TxtTitle" Text="Preparing Winget..." FontSize="15" FontWeight="SemiBold" Foreground="
             </DockPanel>
 
             <!-- Smooth Progress Bar -->
-            <ProgressBar Name="ProgBar" Grid.Row="2" Minimum="0" Maximum="100" Value="0" Foreground="#00A2ED" Margin="0,0,0,10"/>
+            <ProgressBar Name="ProgBar" Grid.Row="2" Minimum="0" Maximum="100" Value="0" Foreground="
 
             <!-- Live Winget Detail Line -->
-            <Border Grid.Row="3" Background="#121215" BorderBrush="#27272A" BorderThickness="1" CornerRadius="5" Padding="8,5">
-                <TextBlock Name="TxtDetail" Text="Initializing package manager..." FontFamily="Consolas" FontSize="11" Foreground="#A1A1AA" TextTrimming="CharacterEllipsis"/>
+            <Border Grid.Row="3" Background="
+                <TextBlock Name="TxtDetail" Text="Initializing package manager..." FontFamily="Consolas" FontSize="11" Foreground="
             </Border>
 
             <!-- Footer / Cancel -->
             <DockPanel Grid.Row="4" Margin="0,12,0,0">
-                <TextBlock Name="TxtFooter" Text="Window will close automatically when finished" FontSize="11" Foreground="#71717A" VerticalAlignment="Center"/>
-                <Button Name="BtnCancel" DockPanel.Dock="Right" Content="Cancel" Background="#27272A" Foreground="#E4E4E7" BorderBrush="#3F3F46" Padding="14,4" Cursor="Hand"/>
+                <TextBlock Name="TxtFooter" Text="Window will close automatically when finished" FontSize="11" Foreground="
+                <Button Name="BtnCancel" DockPanel.Dock="Right" Content="Cancel" Background="
             </DockPanel>
         </Grid>
     </Border>
@@ -170,12 +164,10 @@ $RunWingetTasks = {
         }
     })
 
-    # Background Runspace so UI stays 100% smooth
     $ps = [PowerShell]::Create()
     [void]$ps.AddScript({
         param($Sync, $Tasks)
 
-        # 1. Auto-install / repair Winget if missing
         if (-not (Get-AppxPackage Microsoft.DesktopAppInstaller) -or ([version](Get-AppxPackage Microsoft.DesktopAppInstaller).Version -lt [version]"1.17.0.0")) {
             $Sync.Title  = "Repairing Winget..."
             $Sync.Detail = "Downloading Microsoft App Installer..."
@@ -278,7 +270,6 @@ $RunWingetTasks = {
 
     $asyncHandle = $ps.BeginInvoke()
 
-    # UI Poll Timer
     $uiTimer = New-Object Windows.Threading.DispatcherTimer -Property @{ Interval = [TimeSpan]::FromMilliseconds(80) }
     $closing = $false
 
@@ -305,8 +296,8 @@ $RunWingetTasks = {
 
             $progBar.Value         = 100
             $txtPercent.Text       = "100%"
-            $txtPercent.Foreground = "#10B981"
-            $progBar.Foreground    = "#10B981"
+            $txtPercent.Foreground = "
+            $progBar.Foreground    = "
             $txtTitle.Text         = "Completed!"
             $txtDetail.Text        = "All tasks finished successfully."
             $txtFooter.Text        = "Closing now..."
@@ -315,7 +306,6 @@ $RunWingetTasks = {
 
             if ($OnComplete) { & $OnComplete }
 
-            # Pause briefly at 100% so user sees completion, then auto-close
             $closeTimer = New-Object Windows.Threading.DispatcherTimer -Property @{ Interval = [TimeSpan]::FromSeconds(1.2) }
             $closeTimer.Add_Tick({
                 $closeTimer.Stop()
@@ -329,17 +319,14 @@ $RunWingetTasks = {
     [void]$pWin.ShowDialog()
 }
 
-# ==========================================
-# 3. MAIN GUI LAYOUT (XAML)
-# ==========================================
 [xml]$Xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="WinUtil Pro" Height="520" Width="830"
-        Background="#121215" Foreground="#F4F4F5" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
+        Background="
     <Window.Resources>
         <Style TargetType="RadioButton">
-            <Setter Property="Foreground" Value="#A1A1AA"/>
+            <Setter Property="Foreground" Value="
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -351,13 +338,13 @@ $RunWingetTasks = {
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="b" Property="Background" Value="#202024"/>
-                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                                <Setter TargetName="b" Property="Background" Value="
+                                <Setter Property="Foreground" Value="
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="b" Property="Background" Value="#27272A"/>
-                                <Setter TargetName="b" Property="BorderBrush" Value="#00A2ED"/>
-                                <Setter Property="Foreground" Value="#00A2ED"/>
+                                <Setter TargetName="b" Property="Background" Value="
+                                <Setter TargetName="b" Property="BorderBrush" Value="
+                                <Setter Property="Foreground" Value="
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -365,9 +352,9 @@ $RunWingetTasks = {
             </Setter>
         </Style>
         <Style TargetType="Button">
-            <Setter Property="Background" Value="#27272A"/>
-            <Setter Property="Foreground" Value="#F4F4F5"/>
-            <Setter Property="BorderBrush" Value="#3F3F46"/>
+            <Setter Property="Background" Value="
+            <Setter Property="Foreground" Value="
+            <Setter Property="BorderBrush" Value="
             <Setter Property="Padding" Value="10,6"/>
             <Setter Property="Margin" Value="3"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -385,9 +372,9 @@ $RunWingetTasks = {
         </Grid.RowDefinitions>
 
         <!-- Sidebar -->
-        <Border Background="#18181B" BorderBrush="#27272A" BorderThickness="0,0,1,0" Padding="0,12">
+        <Border Background="
             <StackPanel Name="Nav">
-                <TextBlock Text="WINUTIL PRO" FontSize="16" FontWeight="Bold" Foreground="#00A2ED" Margin="15,0,0,14"/>
+                <TextBlock Text="WINUTIL PRO" FontSize="16" FontWeight="Bold" Foreground="
                 <RadioButton Tag="V0" Content="Performance" IsChecked="True"/>
                 <RadioButton Tag="V1" Content="Install Apps"/>
                 <RadioButton Tag="V2" Content="Uninstall Apps"/>
@@ -402,9 +389,9 @@ $RunWingetTasks = {
             <StackPanel Name="V0">
                 <TextBlock Text="Performance &amp; Optimization" FontSize="17" FontWeight="Bold" Margin="0,0,0,10"/>
                 <UniformGrid Name="Meters" Columns="3" Margin="0,0,0,10"/>
-                <TextBlock Text="Power Plan &amp; Tweaks" Foreground="#A1A1AA" Margin="0,0,0,4"/>
+                <TextBlock Text="Power Plan &amp; Tweaks" Foreground="
                 <UniformGrid Name="TwkGrid" Columns="3"/>
-                <TextBlock Name="TxtUp" Foreground="#71717A" FontSize="11" Margin="3,8,0,0"/>
+                <TextBlock Name="TxtUp" Foreground="
             </StackPanel>
 
             <!-- Tab 1: Install Apps -->
@@ -419,13 +406,13 @@ $RunWingetTasks = {
                 <UniformGrid Name="AppGrid" Grid.Row="1" Columns="3"/>
                 <DockPanel Grid.Row="2" Margin="0,6">
                     <Button Name="BtnCid" Content="Install ID" DockPanel.Dock="Right"/>
-                    <TextBox Name="TxtCid" Background="#18181B" Foreground="White" BorderBrush="#3F3F46" Padding="6,4"/>
+                    <TextBox Name="TxtCid" Background="
                 </DockPanel>
                 <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Name="BtnFix" Content="Repair Winget"/>
                     <Button Name="BtnClr" Content="Clear"/>
                     <Button Name="BtnUpg" Content="Upgrade All"/>
-                    <Button Name="BtnInst" Content="Install Selected" Background="#00A2ED" Foreground="Black" FontWeight="Bold"/>
+                    <Button Name="BtnInst" Content="Install Selected" Background="
                 </StackPanel>
             </Grid>
 
@@ -440,16 +427,16 @@ $RunWingetTasks = {
                 <TextBlock Text="Uninstall Apps" FontSize="17" FontWeight="Bold" Margin="0,0,0,8"/>
                 <DockPanel Grid.Row="1" Margin="0,0,0,6">
                     <Button Name="BtnRef" Content="Refresh" DockPanel.Dock="Right"/>
-                    <TextBox Name="TxtSrc" Background="#18181B" Foreground="White" BorderBrush="#3F3F46" Padding="6,4"/>
+                    <TextBox Name="TxtSrc" Background="
                 </DockPanel>
-                <Border Grid.Row="2" Background="#18181B" BorderBrush="#27272A" BorderThickness="1" Padding="6">
+                <Border Grid.Row="2" Background="
                     <ScrollViewer><StackPanel Name="UList"/></ScrollViewer>
                 </Border>
                 <DockPanel Grid.Row="3" Margin="0,6,0,0">
-                    <TextBlock Name="TxtCnt" Foreground="#A1A1AA" VerticalAlignment="Center"/>
+                    <TextBlock Name="TxtCnt" Foreground="
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button Name="BtnUClr" Content="Clear"/>
-                        <Button Name="BtnUn" Content="Uninstall Selected" Background="#E11D48" Foreground="White" FontWeight="Bold"/>
+                        <Button Name="BtnUn" Content="Uninstall Selected" Background="
                     </StackPanel>
                 </DockPanel>
             </Grid>
@@ -457,8 +444,8 @@ $RunWingetTasks = {
             <!-- Tab 3: System & Tools -->
             <StackPanel Name="V3" Visibility="Collapsed">
                 <TextBlock Text="System Specs &amp; Admin Tools" FontSize="17" FontWeight="Bold" Margin="0,0,0,10"/>
-                <Border Background="#18181B" BorderBrush="#27272A" BorderThickness="1" Padding="12" Margin="0,0,0,10">
-                    <TextBlock Name="TxtSys" FontFamily="Consolas" Foreground="#E4E4E7" LineHeight="19"/>
+                <Border Background="
+                    <TextBlock Name="TxtSys" FontFamily="Consolas" Foreground="
                 </Border>
                 <UniformGrid Name="SysGrid" Columns="3"/>
             </StackPanel>
@@ -466,30 +453,30 @@ $RunWingetTasks = {
             <!-- Tab 4: Display Light -->
             <StackPanel Name="V4" Visibility="Collapsed">
                 <TextBlock Text="Display Studio Light" FontSize="17" FontWeight="Bold" Margin="0,0,0,8"/>
-                <Border Name="Prev" Height="56" Background="#FFFFFF" CornerRadius="5" Margin="0,0,0,10">
-                    <TextBlock Text="Up/Down: Dim | Left/Right: Cycle | Click/Esc: Exit" Background="#99000000" Foreground="White" Padding="8,3" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11"/>
+                <Border Name="Prev" Height="56" Background="
+                    <TextBlock Text="Up/Down: Dim | Left/Right: Cycle | Click/Esc: Exit" Background="
                 </Border>
                 <DockPanel Margin="0,0,0,4">
                     <TextBlock Text="Brightness " Width="85"/>
-                    <TextBlock Name="TxtBr" Text="100%" DockPanel.Dock="Right" Width="45" Foreground="#00A2ED"/>
+                    <TextBlock Name="TxtBr" Text="100%" DockPanel.Dock="Right" Width="45" Foreground="
                     <Slider Name="SldBr" Minimum="10" Maximum="100" Value="100"/>
                 </DockPanel>
                 <DockPanel Margin="0,0,0,10">
                     <TextBlock Text="Color Temp " Width="85"/>
-                    <TextBlock Name="TxtTmp" Text="Neutral" DockPanel.Dock="Right" Width="45" Foreground="#00A2ED"/>
+                    <TextBlock Name="TxtTmp" Text="Neutral" DockPanel.Dock="Right" Width="45" Foreground="
                     <Slider Name="SldTmp" Minimum="0" Maximum="100" Value="50"/>
                 </DockPanel>
                 <UniformGrid Name="ColGrid" Columns="4" Rows="2" Height="105"/>
                 <DockPanel Margin="0,10,0,0">
-                    <CheckBox Name="all" Content="All Monitors" Foreground="#E4E4E7" VerticalAlignment="Center"/>
-                    <Button Name="go" Content="LAUNCH STUDIO LIGHT" DockPanel.Dock="Right" Background="#00A2ED" Foreground="Black" FontWeight="Bold"/>
+                    <CheckBox Name="all" Content="All Monitors" Foreground="
+                    <Button Name="go" Content="LAUNCH STUDIO LIGHT" DockPanel.Dock="Right" Background="
                 </DockPanel>
             </StackPanel>
         </Grid>
 
         <!-- Bottom Status Bar -->
-        <Border Grid.Row="1" Grid.ColumnSpan="2" Background="#18181B" BorderBrush="#27272A" BorderThickness="0,1,0,0" Padding="12,0">
-            <TextBlock Name="St" Text="Ready." FontSize="11" Foreground="#A1A1AA" VerticalAlignment="Center"/>
+        <Border Grid.Row="1" Grid.ColumnSpan="2" Background="
+            <TextBlock Name="St" Text="Ready." FontSize="11" Foreground="
         </Border>
     </Grid>
 </Window>
@@ -498,7 +485,6 @@ $RunWingetTasks = {
 $Win = [Windows.Markup.XamlReader]::Load((New-Object Xml.XmlNodeReader $Xaml))
 $SetStatus = { param($Msg) $Win.FindName("St").Text = $Msg }
 
-# Sidebar Navigation
 $Win.FindName("Nav").Children | Where-Object { $_ -is [Windows.Controls.RadioButton] } | ForEach-Object {
     $_.Add_Checked({
         param($sender, $e)
@@ -507,25 +493,22 @@ $Win.FindName("Nav").Children | Where-Object { $_ -is [Windows.Controls.RadioBut
     })
 }
 
-# ==========================================
-# 4. PERFORMANCE & TWEAKS LOGIC
-# ==========================================
 $AddMeter = {
     param($Label, $Color)
-    $border = New-Object Windows.Controls.Border -Property @{ Background = '#18181B'; BorderBrush = '#27272A'; BorderThickness = '1'; Padding = '10'; Margin = '3' }
+    $border = New-Object Windows.Controls.Border -Property @{ Background = '
     $stack  = New-Object Windows.Controls.StackPanel
-    $lbl    = New-Object Windows.Controls.TextBlock -Property @{ Text = $Label; FontSize = 11; Foreground = '#A1A1AA' }
+    $lbl    = New-Object Windows.Controls.TextBlock -Property @{ Text = $Label; FontSize = 11; Foreground = '
     $val    = New-Object Windows.Controls.TextBlock -Property @{ Text = '--'; FontSize = 18; FontWeight = 'Bold'; Foreground = $Color; Margin = '0,2,0,5' }
-    $bar    = New-Object Windows.Controls.ProgressBar -Property @{ Height = 5; Maximum = 100; Foreground = $Color; Background = '#27272A'; BorderThickness = '0' }
+    $bar    = New-Object Windows.Controls.ProgressBar -Property @{ Height = 5; Maximum = 100; Foreground = $Color; Background = '
     @($lbl, $val, $bar) | ForEach-Object { [void]$stack.Children.Add($_) }
     $border.Child = $stack
     [void]$Win.FindName("Meters").Children.Add($border)
     @($val, $bar)
 }
 
-$MeterCpu  = & $AddMeter "CPU LOAD" "#00A2ED"
-$MeterRam  = & $AddMeter "MEMORY"   "#10B981"
-$MeterDisk = & $AddMeter "DRIVE C:" "#F59E0B"
+$MeterCpu  = & $AddMeter "CPU LOAD" "
+$MeterRam  = & $AddMeter "MEMORY"   "
+$MeterDisk = & $AddMeter "DRIVE C:" "
 
 try { $CpuCounter = New-Object Diagnostics.PerformanceCounter("Processor", "% Processor Time", "_Total"); [void]$CpuCounter.NextValue() } catch { $CpuCounter = $null }
 $CompInfo = New-Object Microsoft.VisualBasic.Devices.ComputerInfo
@@ -572,9 +555,6 @@ foreach ($t in $Tweaks) {
     [void]$Win.FindName("TwkGrid").Children.Add($btn)
 }
 
-# ==========================================
-# 5. INSTALL APPS CATALOG (EASY TO EDIT!)
-# ==========================================
 $AppCatalog = @(
     @("Browsers & Social", @(
         "Firefox|Mozilla.Firefox",
@@ -605,10 +585,10 @@ $AppCatalog = @(
 $AppCheckboxes = @()
 foreach ($cat in $AppCatalog) {
     $sp = New-Object Windows.Controls.StackPanel -Property @{ Margin = '4' }
-    [void]$sp.Children.Add((New-Object Windows.Controls.TextBlock -Property @{ Text = $cat[0]; Foreground = '#00A2ED'; FontWeight = 'Bold'; Margin = '0,0,0,5' }))
+    [void]$sp.Children.Add((New-Object Windows.Controls.TextBlock -Property @{ Text = $cat[0]; Foreground = '
     foreach ($item in $cat[1]) {
         $parts = $item -split '\|'
-        $cb = New-Object Windows.Controls.CheckBox -Property @{ Content = $parts[0]; Tag = $parts[1]; Foreground = '#E4E4E7'; Margin = '0,3' }
+        $cb = New-Object Windows.Controls.CheckBox -Property @{ Content = $parts[0]; Tag = $parts[1]; Foreground = '
         [void]$sp.Children.Add($cb)
         $AppCheckboxes += $cb
     }
@@ -652,9 +632,6 @@ $Win.FindName("BtnCid").Add_Click({
     )
 })
 
-# ==========================================
-# 6. UNINSTALL APPS LOGIC
-# ==========================================
 $UninstList  = $Win.FindName("UList")
 $SearchBox   = $Win.FindName("TxtSrc")
 $CountLabel  = $Win.FindName("TxtCnt")
@@ -675,7 +652,7 @@ $LoadInstalledApps = {
         [void]$UninstList.Children.Add((New-Object Windows.Controls.CheckBox -Property @{
             Content    = $app.DisplayName
             Tag        = $app.DisplayName
-            Foreground = '#E4E4E7'
+            Foreground = '
             Margin     = '0,3'
         }))
     }
@@ -709,9 +686,6 @@ $Win.FindName("BtnUn").Add_Click({
 })
 & $LoadInstalledApps
 
-# ==========================================
-# 7. SYSTEM SPECS & DISPLAY LIGHT CONTROLS
-# ==========================================
 $os  = Get-CimInstance Win32_OperatingSystem
 $cpu = Get-CimInstance Win32_Processor | Select-Object -First 1
 $gpu = Get-CimInstance Win32_VideoController | Select-Object -First 1
@@ -756,7 +730,7 @@ $Win.FindName("SldBr").Add_ValueChanged($UpdateLightPreview)
 $Win.FindName("SldTmp").Add_ValueChanged($UpdateLightPreview)
 
 $ColorNames = @("Pure White", "Warm", "Cool", "50% Gray", "Red", "Green", "Blue", "Black")
-$ColorText  = @("#000", "#000", "#000", "#FFF", "#FFF", "#000", "#FFF", "#FFF")
+$ColorText  = @("
 0..7 | ForEach-Object {
     $hex = $PresetColors[$_]
     $btn = New-Object Windows.Controls.Button -Property @{ Content = $ColorNames[$_]; Background = $hex; Foreground = $ColorText[$_]; FontWeight = 'Bold' }
@@ -765,5 +739,4 @@ $ColorText  = @("#000", "#000", "#000", "#FFF", "#FFF", "#000", "#FFF", "#FFF")
 }
 $Win.FindName("go").Add_Click({ & $StartFullScreen $script:CustomLightColor $Win.FindName("all").IsChecked })
 
-# Launch GUI
 [void]$Win.ShowDialog()
